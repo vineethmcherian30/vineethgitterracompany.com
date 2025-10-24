@@ -29,4 +29,36 @@ data "aws_iam_policy_document" "ec2_policy" {
   }
 }
 
+resource "aws_iam_role" "lambda_role" {
+  name               = "${var.project}-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
+}
+
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "lambda_policy" {
+  name   = "${var.project}-lambda-policy"
+  role   = aws_iam_role.lambda_role.id
+  policy = data.aws_iam_policy_document.lambda_policy.json
+}
+
+data "aws_iam_policy_document" "lambda_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["*"]
+  }
+}
+
 output "role_name" { value = aws_iam_role.ec2_role.name }
