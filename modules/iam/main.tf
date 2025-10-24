@@ -43,6 +43,20 @@ data "aws_iam_policy_document" "lambda_assume" {
     }
   }
 }
+resource "aws_iam_role" "lambda_role" {
+  name               = "${var.project}-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
+}
+
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
 
 resource "aws_iam_role_policy" "lambda_policy" {
   name   = "${var.project}-lambda-policy"
