@@ -76,3 +76,5 @@ data "aws_iam_policy_document" "lambda_policy" {
 }
 
 output "role_name" { value = aws_iam_role.ec2_role.name }
+
+#comment to check the flow.
